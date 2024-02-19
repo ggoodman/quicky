@@ -1,0 +1,20 @@
+{
+  "name": "quicky-repo",
+  "version": "0.0.0",
+  "description": "",
+  "private": true,
+  "main": "",
+  "scripts": {
+    "bench": "k6 run scripts/bench.js",
+    "build:js": "esbuild --bundle js/index.js --outdir=dist --format=iife",
+    "build:wasm": "cargo build --target wasm32-wasi --profile release -p quicky-wasm",
+    "build": "npm run build:js && npm run build:wasm",
+    "start": "npm run build && cargo run --profile release -p quicky"
+  },
+  "keywords": [],
+  "author": "Geoff Goodman",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.20.1"
+  }
+}

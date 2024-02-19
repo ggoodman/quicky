@@ -1,0 +1,8 @@
+[workspace]
+members = ["crates/quicky", "crates/quicky-wasm"]
+resolver = "2"
+
+[profile.release]
+strip = true
+opt-level = "z"
+lto = true

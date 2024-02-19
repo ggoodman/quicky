@@ -1,0 +1,21 @@
+[package]
+name = "quicky-wasm"
+version = "0.0.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = { version = "1.0.79", default-features = false, features = [] }
+rquickjs = { version = "0.5.0", default-features = false, features = [
+  # "classes",
+  # "properties",
+  # "exports",
+  # "allocator",
+  "rust-alloc",
+  # "array-buffer",
+] }
+talc = { version = "4.2.0", default-features = false, features = ["lock_api"] }

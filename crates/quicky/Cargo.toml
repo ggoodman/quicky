@@ -1,0 +1,18 @@
+[package]
+name = "quicky"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = "4.5.1"
+anyhow = "1.0.79"
+wasi-common = { version = "16", features = [] }
+wasmtime = "16"
+wasmtime-wasi = { version = "16", default-features = true, features = ["exit"] }
+
+[build-dependencies]
+anyhow = "1.0.79"
+# quicky-wasm = { path = "../quicky-wasm", }
+wizer = "4"
