@@ -1,5 +1,6 @@
 use std::{
     borrow::BorrowMut,
+    ffi::c_void,
     io::{self, Write},
 };
 
@@ -46,22 +47,27 @@ async fn hello() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> io::Result<()> {
-    let server = HttpServer::new(|| {
-        // Define the WASI functions globally on the `Config`.
-        let engine = Engine::default();
-        let mut linker = Linker::<WasiCtx>::new(&engine);
-        wasmtime_wasi::add_to_linker(&mut linker, |s| s).unwrap();
+    let engine = web::Data::new(Engine::default());
+    // Define the WASI functions globally on the `Config`.
+    let mut linker = Linker::<WasiCtx>::new(&engine);
+    wasmtime_wasi::add_to_linker(&mut linker, |s| s).unwrap();
 
-        let module = Module::from_binary(&engine, ENGINE_BYTES).unwrap();
-        let precompiled = linker.instantiate_pre(&module).unwrap();
+    // Get the current instant of time
+    let start_compile = std::time::Instant::now();
 
+    let module = Module::from_binary(&engine, ENGINE_BYTES).unwrap();
+    let precompiled = web::Data::new(linker.instantiate_pre(&module).unwrap());
+
+    println!("Compiled in {:?}", start_compile.elapsed());
+
+    let server = HttpServer::new(move || {
         let app = App::new()
-            .app_data(web::Data::new(engine))
-            .app_data(web::Data::new(precompiled))
+            .app_data(engine.clone())
+            .app_data(precompiled.clone())
             .service(hello)
             .service(handle_wasmtime);
 
-        print!("service created");
+        println!("service created in {:?}", start_compile.elapsed());
 
         let _ = std::io::stdout().flush();
 
@@ -70,9 +76,18 @@ async fn main() -> io::Result<()> {
     .bind(("127.0.0.1", 8080))?
     .run();
 
-    print!("server listening");
+    println!("server listening");
 
     std::io::stdout().flush()?;
 
     server.await
+}
+
+#[no_mangle]
+pub extern "C" fn alloc(size: usize) -> *mut c_void {
+    let mut buf = Vec::with_capacity(size);
+    let ptr = buf.as_mut_ptr();
+    std::mem::forget(buf);
+
+    ptr as *mut c_void
 }
