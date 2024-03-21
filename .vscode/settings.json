@@ -1,11 +1,8 @@
 {
-  "rust-analyzer.check.allTargets": true,
-  "rust-analyzer.linkedProjects": [
-    "./crates/quicky/Cargo.toml",
-    "./crates/quicky-wasm/Cargo.toml"
-  ],
+  "rust-analyzer.check.targets": ["wasm32-wasi"],
   "rust-analyzer.inlayHints.typeHints.enable": false,
   "rust-analyzer.inlayHints.parameterHints.enable": false,
+  "rust-analyzer.linkedProjects": ["./Cargo.toml"],
   "[rust]": {
     "editor.tabSize": 4
   }

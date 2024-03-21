@@ -1,8 +1,25 @@
-[workspace]
-members = ["crates/quicky", "crates/quicky-wasm"]
-resolver = "2"
+[package]
+name = "quicky"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+anyhow = { version = "1.0.81", default-features = false, features = [] }
+rquickjs = { git = "https://github.com/ggoodman/rquickjs", rev = "717e9adda40b97cc914614ca84cd81e3af2d060c", default-features = false, features = [
+  "bindgen",
+  "rust-alloc",
+] }
+# rquickjs = { git = "https://github.com/ggoodman/rquickjs", rev = "26bb30edfe7bfca8d8f9f085d5c6c1dcf87e5ede", default-features = false, features = [
+#   "rust-alloc",
+# ] }
+# quickjs-wasm-sys = { version = "1.2.0", default-features = false }
 
 [profile.release]
-strip = true
+# strip = true
 opt-level = "z"
 lto = true
+codegen-units = 1
+panic = "abort"
