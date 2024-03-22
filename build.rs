@@ -85,39 +85,37 @@ fn get_wasi_sdk_path() -> PathBuf {
 }
 
 fn main() {
-    if env::var("CARGO_CFG_TARGET_OS").unwrap() != "wasi" {
-        panic!("CARGO_CFG_TARGET_OS is not WASI");
-    }
+    if env::var("CARGO_CFG_TARGET_OS").unwrap() == "wasi" {
+        let wasi_sdk_path = get_wasi_sdk_path();
+        if !wasi_sdk_path.try_exists().unwrap() {
+            panic!(
+                "wasi-sdk not installed in specified path of {}",
+                wasi_sdk_path.display()
+            );
+        }
+        env::set_var("WASI_SDK", wasi_sdk_path.to_str().unwrap());
 
-    let wasi_sdk_path = get_wasi_sdk_path();
-    if !wasi_sdk_path.try_exists().unwrap() {
-        panic!(
-            "wasi-sdk not installed in specified path of {}",
+        println!(
+            "cargo:rerun-if-changed={wasi_sdk_path}",
+            wasi_sdk_path = wasi_sdk_path.display()
+        );
+        println!(
+            "cargo:rerun-if-changed={}/share/wasi-sysroot/lib/wasm32-wasi/libc.a",
             wasi_sdk_path.display()
         );
+
+        let sysroot = format!(
+            "--sysroot={}",
+            wasi_sdk_path.join("share/wasi-sysroot").display()
+        );
+        env::set_var("CFLAGS", &sysroot);
+
+        // Point rust linker to the wasi shared libraries
+        println!(
+            "cargo:rustc-link-search={}",
+            wasi_sdk_path
+                .join("share/wasi-sysroot/lib/wasm32-wasi")
+                .display()
+        );
     }
-    env::set_var("WASI_SDK", wasi_sdk_path.to_str().unwrap());
-
-    println!(
-        "cargo:rerun-if-changed={wasi_sdk_path}",
-        wasi_sdk_path = wasi_sdk_path.display()
-    );
-    println!(
-        "cargo:rerun-if-changed={}/share/wasi-sysroot/lib/wasm32-wasi/libc.a",
-        wasi_sdk_path.display()
-    );
-
-    let sysroot = format!(
-        "--sysroot={}",
-        wasi_sdk_path.join("share/wasi-sysroot").display()
-    );
-    env::set_var("CFLAGS", &sysroot);
-
-    // Point rust linker to the wasi shared libraries
-    println!(
-        "cargo:rustc-link-search={}",
-        wasi_sdk_path
-            .join("share/wasi-sysroot/lib/wasm32-wasi")
-            .display()
-    );
 }

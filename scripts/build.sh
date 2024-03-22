@@ -8,8 +8,6 @@ for TRACE_SYMBOL in $TRACE_SYMBOLS; do
   RUSTFLAGS="$RUSTFLAGS -C link-args=--trace-symbol=$TRACE_SYMBOL"
 done
 
-export WASI_SDK="$(pwd)/wasi-sdk/build/install/opt/wasi-sdk"
-
 RUSTC_LOG=rustc_codegen_ssa::back::link=info \
 RUSTFLAGS=$RUSTFLAGS \
   cargo +nightly build -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort --target wasm32-wasi --release -vv
