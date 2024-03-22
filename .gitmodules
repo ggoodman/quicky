@@ -1,0 +1,4 @@
+[submodule "wasi-sdk"]
+	path = wasi-sdk
+	url = https://github.com/ggoodman/wasi-sdk
+	branch = strip-wasi-stdio
