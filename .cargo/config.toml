@@ -1,4 +1,4 @@
 
 [env]
-# WASI_SDK = { value = "../wasi-sdk/build/wasi-sdk-21.0.0ga50a641f4b5a+m", relative = true }
-NDEBUG = { value = "1", force = true }
+WASI_SDK = { value = "wasi-sdk/build/install/opt/wasi-sdk", relative = true }
+NDEBUG = "1"
